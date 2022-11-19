@@ -236,7 +236,7 @@ impl Constructor {
         let return_type = self
             .output()
             .map(quote::ToTokens::to_token_stream)
-            .unwrap_or_else(|| quote::quote! { () });
+            .unwrap_or_else(|| quote::quote! { Self });
 
         syn::parse_quote! {
             ::ink::ConstructorResult<#return_type>
