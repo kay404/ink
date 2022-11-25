@@ -311,6 +311,13 @@ impl EnvBackend for EnvInstance {
         ext::ecdsa_to_eth_address(pubkey, output).map_err(Into::into)
     }
 
+    fn mimc_sponge(
+        &mut self,
+        inputs: &[&str; 2],
+    ) -> Result<()> {
+        ext::mimc_sponge(inputs).map_err(Into::into)
+    }
+
     fn call_chain_extension<I, T, E, ErrorCode, F, D>(
         &mut self,
         func_id: u32,

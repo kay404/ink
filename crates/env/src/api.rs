@@ -565,6 +565,14 @@ pub fn ecdsa_to_eth_address(pubkey: &[u8; 33], output: &mut [u8; 20]) -> Result<
     })
 }
 
+pub fn mimc_sponge(
+    inputs: &[&str; 2],
+) -> Result<()> {
+    <EnvInstance as OnInstance>::on_instance(|instance| {
+        instance.mimc_sponge(inputs)
+    })
+}
+
 /// Checks whether the specified account is a contract.
 ///
 /// # Errors

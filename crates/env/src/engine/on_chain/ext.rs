@@ -343,6 +343,10 @@ mod sys {
             public_key_ptr: Ptr32<[u8]>,
             output_ptr: Ptr32Mut<[u8]>,
         ) -> ReturnCode;
+
+        pub fn seal_mimc_sponge(
+            inputs: Ptr32<[u8]>,
+        ) -> ReturnCode;
     }
 
     #[link(wasm_import_module = "seal1")]
@@ -728,6 +732,17 @@ pub fn ecdsa_to_eth_address(pubkey: &[u8; 33], output: &mut [u8; 20]) -> Result 
         sys::seal_ecdsa_to_eth_address(
             Ptr32::from_slice(pubkey),
             Ptr32Mut::from_slice(output),
+        )
+    };
+    ret_code.into()
+}
+
+pub fn mimc_sponge(
+    inputs: &[&str; 2],
+) -> Result {
+    let ret_code = unsafe {
+        sys::seal_mimc_sponge(
+            Ptr32::from_slice(inputs),
         )
     };
     ret_code.into()
