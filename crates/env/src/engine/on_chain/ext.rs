@@ -742,7 +742,7 @@ pub fn ecdsa_to_eth_address(pubkey: &[u8; 33], output: &mut [u8; 20]) -> Result 
 pub fn mimc_sponge(
     left: &[u8; 32],
     right: &[u8; 32],
-    output: &[&u8; 32],
+    output: &mut [u8; 32],
 ) -> Result {
     let ret_code = unsafe {
         sys::seal_mimc_sponge(
