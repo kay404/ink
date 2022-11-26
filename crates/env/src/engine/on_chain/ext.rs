@@ -345,7 +345,9 @@ mod sys {
         ) -> ReturnCode;
 
         pub fn seal_mimc_sponge(
-            inputs: Ptr32<[u8]>,
+            left_ptr: Ptr32<[u8]>,
+            left_ptr: Ptr32<[u8]>,
+            output_ptr: Ptr32Mut<[u8]>,
         ) -> ReturnCode;
     }
 
@@ -738,11 +740,15 @@ pub fn ecdsa_to_eth_address(pubkey: &[u8; 33], output: &mut [u8; 20]) -> Result 
 }
 
 pub fn mimc_sponge(
-    inputs: &[&str; 2],
+    left: &[u8; 32],
+    right: &[u8; 32],
+    output: &[&u8; 32],
 ) -> Result {
     let ret_code = unsafe {
         sys::seal_mimc_sponge(
-            Ptr32::from_slice(inputs),
+            Ptr32::from_slice(left),
+            Ptr32::from_slice(right),
+            Ptr32Mut::from_slice(output),
         )
     };
     ret_code.into()

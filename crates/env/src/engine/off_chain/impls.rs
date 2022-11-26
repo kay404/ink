@@ -43,8 +43,10 @@ use crate::{
 use ink_engine::{
     ext,
     ext::Engine,
+    iv_constants::{IV, SCALAR_FIELD}
 };
 use ink_primitives::Key;
+use zkp_u256::U256;
 
 /// The capacity of the static buffer.
 /// This is the same size as the ink! on-chain environment. We chose to use the same size
@@ -312,6 +314,37 @@ impl EnvBackend for EnvInstance {
         output.as_mut().copy_from_slice(&hash[12..]);
         Ok(())
     }
+
+    fn mimc_sponge(
+        &mut self, 
+        left: &[u8; 32],
+        right: &[u8; 32],
+        output: &mut [u8; 32]
+    ) -> Result<()> {
+		let p = U256::from_decimal_str(SCALAR_FIELD).unwrap();
+		let inputs = [left, right];
+		let mut left = U256::ZERO;
+		let mut right = U256::ZERO;
+		let mut t;
+		let mut a;
+		let k = U256::ZERO;
+		for elt in inputs {
+			left = left + U256::from_bytes_be(elt) % &p;
+			for i in 0..(220 - 1) {
+				t = (&left + U256::from_decimal_str(IV[i]).unwrap() + &k) % &p;
+				a = t.mulmod(&t, &p); // t^2
+				let l_new = (a.mulmod(&a, &p).mulmod(&t, &p) + right) % &p;
+				right = left.clone();
+				left = l_new;
+					// ink_env::debug_println!("hash: {}", left.to_decimal_string());
+			}
+			t = (&k + &left) % &p;
+			a = t.mulmod(&t, &p); // t^2
+			right = (a.mulmod(&a, &p).mulmod(&t, &p) + right) % &p; // t^5
+		}
+        *output = left.to_bytes_be();
+		Ok(())
+	}
 
     fn call_chain_extension<I, T, E, ErrorCode, F, D>(
         &mut self,

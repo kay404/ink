@@ -313,9 +313,11 @@ impl EnvBackend for EnvInstance {
 
     fn mimc_sponge(
         &mut self,
-        inputs: &[&str; 2],
+        left: &[u8; 32],
+        right: &[u8; 32],
+        output: &mut [u8; 32],
     ) -> Result<()> {
-        ext::mimc_sponge(inputs).map_err(Into::into)
+        ext::mimc_sponge(left, right, output).map_err(Into::into)
     }
 
     fn call_chain_extension<I, T, E, ErrorCode, F, D>(

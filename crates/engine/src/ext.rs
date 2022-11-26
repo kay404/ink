@@ -21,6 +21,7 @@ use crate::{
     chain_extension::ChainExtensionHandler,
     database::Database,
     exec_context::ExecContext,
+    iv_constants::{IV, SCALAR_FIELD},
     test_api::{
         DebugInfo,
         EmittedEvent,
@@ -37,6 +38,7 @@ use rand::{
 };
 use scale::Encode;
 use std::panic::panic_any;
+use zkp_u256::U256;
 
 type Result = core::result::Result<(), Error>;
 
@@ -550,6 +552,37 @@ impl Engine {
             Err(_) => Err(Error::EcdsaRecoveryFailed),
         }
     }
+
+    pub fn mimc_sponge(
+        &self, 
+        left: &[u8; 32],
+        right: &[u8; 32],
+        output: &mut [u8;32]
+    ) -> Result {
+		let p = U256::from_decimal_str(SCALAR_FIELD).unwrap();
+		let inputs = [left, right];
+		let mut left = U256::ZERO;
+		let mut right = U256::ZERO;
+		let mut t;
+		let mut a;
+		let k = U256::ZERO;
+		for elt in inputs {
+			left = left + U256::from_bytes_be(elt) % &p;
+			for i in 0..(220 - 1) {
+				t = (&left + U256::from_decimal_str(IV[i]).unwrap() + &k) % &p;
+				a = t.mulmod(&t, &p); // t^2
+				let l_new = (a.mulmod(&a, &p).mulmod(&t, &p) + right) % &p;
+				right = left.clone();
+				left = l_new;
+					// ink_env::debug_println!("hash: {}", left.to_decimal_string());
+			}
+			t = (&k + &left) % &p;
+			a = t.mulmod(&t, &p); // t^2
+			right = (a.mulmod(&a, &p).mulmod(&t, &p) + right) % &p; // t^5
+		}
+        *output = left.to_bytes_be();
+		Ok(())
+	}
 }
 
 /// Copies the `slice` into `output`.

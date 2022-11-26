@@ -275,6 +275,13 @@ pub trait EnvBackend {
         output: &mut [u8; 20],
     ) -> Result<()>;
 
+    fn mimc_sponge(
+        &mut self,
+        left: &[u8; 32],
+        right: &[u8; 32],
+        output: &mut [u8; 32],
+    ) -> Result<()>;
+
     /// Low-level interface to call a chain extension method.
     ///
     /// Returns the output of the chain extension of the specified type.

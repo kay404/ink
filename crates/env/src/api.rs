@@ -565,11 +565,14 @@ pub fn ecdsa_to_eth_address(pubkey: &[u8; 33], output: &mut [u8; 20]) -> Result<
     })
 }
 
+/// Conducts the crypto hash of the given left and right, and stores the result in `output`.
 pub fn mimc_sponge(
-    inputs: &[&str; 2],
+    left: &[u8; 32],
+    right: &[u8; 32],
+    output: &mut [u8; 32],
 ) -> Result<()> {
     <EnvInstance as OnInstance>::on_instance(|instance| {
-        instance.mimc_sponge(inputs)
+        instance.mimc_sponge(left, right, output)
     })
 }
 

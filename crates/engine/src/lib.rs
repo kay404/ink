@@ -13,6 +13,7 @@
 // limitations under the License.
 
 pub mod ext;
+pub mod iv_constants;
 pub mod test_api;
 
 mod chain_extension;

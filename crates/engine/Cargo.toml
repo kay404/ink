@@ -26,6 +26,7 @@ rand = { version = "0.8" }
 
 # ECDSA for the off-chain environment.
 secp256k1 = { version = "0.24", features = ["recovery", "global-context"], optional = true }
+zkp-u256 = { git = "https://github.com/kay404/OpenZKP", branch = "master", default-features = false }
 
 [features]
 default = ["std"]

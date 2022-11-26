@@ -24,6 +24,8 @@ use secp256k1::{
     SECP256K1,
 };
 
+use zkp_u256::U256;
+
 /// The public methods of the `contracts` pallet write their result into an
 /// `output` buffer instead of returning them. Since we aim to emulate this
 /// behavior, we have to provide some buffer for our tests to pass into these
@@ -271,4 +273,22 @@ fn ecdsa_recovery_with_secp256k1_crate() {
 
     // then
     assert_eq!(output, pubkey.serialize());
+}
+
+#[test]
+fn mimc_sponge_test() {
+    // given
+    let engine = Engine::new();
+    let hash: [u8; 32] = [45, 159, 234, 131, 152, 166, 30, 161, 153, 126, 125, 116, 131, 100, 192, 253, 180, 148, 18, 196, 219, 171, 193, 87, 131, 117, 173, 230, 66, 232, 85, 129];
+    let left = U256::ZERO.to_bytes_be();
+    let right = U256::ZERO.to_bytes_be();
+
+
+    let mut output = [0u8; 32];
+    engine
+        .mimc_sponge(&left, &right, &mut output)
+        .expect("ecdsa recovery failed");
+
+    // then
+    assert_eq!(output, hash);
 }

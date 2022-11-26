@@ -883,6 +883,17 @@ where
             .map_err(|_| Error::EcdsaRecoveryFailed)
     }
 
+    pub fn mimc_sponge(
+        self,
+        left: &[u8; 32],
+        right: &[u8; 32],
+    ) -> Result<[u8; 32]> {
+        let mut output = [0; 32];
+        ink_env::mimc_sponge(left, right, &mut output)
+            .map(|_| output)
+            .map_err(|_| Error::MimcSpongeFailed)
+    }
+
     /// Checks whether a specified account belongs to a contract.
     ///
     /// # Example
