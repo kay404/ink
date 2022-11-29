@@ -346,7 +346,7 @@ mod sys {
 
         pub fn seal_mimc_sponge(
             left_ptr: Ptr32<[u8]>,
-            left_ptr: Ptr32<[u8]>,
+            right_ptr: Ptr32<[u8]>,
             output_ptr: Ptr32Mut<[u8]>,
         ) -> ReturnCode;
     }
